@@ -1,6 +1,7 @@
+import 'package:abayecommerce/controllers/cart_controller.dart';
 import 'package:abayecommerce/controllers/popular_product_controller.dart';
 import 'package:abayecommerce/controllers/recomended_product_controller.dart';
-import 'package:abayecommerce/pages/home/main_product_page.dart';
+
 import 'package:abayecommerce/route/route_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -17,15 +18,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.find<PopularProductController>().getPopularProductList();
-    Get.find<RecommendedProductController>().getRecommendedProductList();
-
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: "Abay Ecommerce",
-      home: MainProductPage(),
-      // initialRoute: RouteHelper.intial,
-      getPages: RouteHelper.routes,
-    );
+    Get.find<CartController>().getCartData();
+    return GetBuilder<PopularProductController>(builder: (_) {
+      return GetBuilder<RecommendedProductController>(builder: (_) {
+        return GetMaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: "Abay Ecommerce",
+          // home: const SplashScreen(),
+          initialRoute: RouteHelper.getSplashPage(),
+          getPages: RouteHelper.routes,
+        );
+      });
+    });
   }
 }

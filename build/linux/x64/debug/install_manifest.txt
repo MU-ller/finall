@@ -12,6 +12,7 @@
 /home/muller/Desktop/abay_ecommerc/ffe/build/linux/x64/debug/bundle/data/flutter_assets/assets/images/food5.png
 /home/muller/Desktop/abay_ecommerc/ffe/build/linux/x64/debug/bundle/data/flutter_assets/assets/images/image3.jpg
 /home/muller/Desktop/abay_ecommerc/ffe/build/linux/x64/debug/bundle/data/flutter_assets/assets/images/labtop02.jpg
+/home/muller/Desktop/abay_ecommerc/ffe/build/linux/x64/debug/bundle/data/flutter_assets/assets/images/logo1.jpg
 /home/muller/Desktop/abay_ecommerc/ffe/build/linux/x64/debug/bundle/data/flutter_assets/assets/images/image1.jpg
 /home/muller/Desktop/abay_ecommerc/ffe/build/linux/x64/debug/bundle/data/flutter_assets/assets/images/food1.png
 /home/muller/Desktop/abay_ecommerc/ffe/build/linux/x64/debug/bundle/data/flutter_assets/assets/images/food2.png

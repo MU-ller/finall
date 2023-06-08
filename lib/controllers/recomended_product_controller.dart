@@ -15,13 +15,11 @@ class RecommendedProductController extends GetxController {
     Response response =
         await recommendedProductRepo.getRecommendedProductList();
     if (response.statusCode == 200) {
-      print("got recommended products is called");
       if (response.statusCode == 200) {
         _recommendedProductList = [];
         _recommendedProductList
             .addAll(Product.fromJson(response.body).products);
         _isLoaded = true;
-        // print(_recommendedProductList);
         update();
       } else {
         print("did not get products");

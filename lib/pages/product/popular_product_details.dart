@@ -1,18 +1,30 @@
-import 'package:abayecommerce/pages/home/main_product_page.dart';
+import 'package:abayecommerce/controllers/cart_controller.dart';
+import 'package:abayecommerce/controllers/popular_product_controller.dart';
 import 'package:abayecommerce/route/route_helper.dart';
+import 'package:abayecommerce/utils/app_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:abayecommerce/colors/AppColors.dart';
 import 'package:abayecommerce/utils/dimensions.dart';
 import 'package:abayecommerce/widgets/app_column.dart';
 import 'package:abayecommerce/widgets/app_icon.dart';
 import 'package:abayecommerce/widgets/big_text.dart';
-import 'package:abayecommerce/widgets/expandable_text_widget.dart';
 import 'package:get/get.dart';
 
 class PopularProductDetail extends StatelessWidget {
-  const PopularProductDetail({super.key});
+  int pageId;
+  final String page;
+  PopularProductDetail({
+    super.key,
+    required this.pageId,
+    required this.page,
+  });
   @override
   Widget build(BuildContext context) {
+    var product =
+        Get.find<PopularProductController>().popularProductList[pageId];
+    Get.find<PopularProductController>()
+        .initProduct(product, Get.find<CartController>());
+
     return Scaffold(
       body: Stack(
         children: [
@@ -25,8 +37,11 @@ class PopularProductDetail extends StatelessWidget {
               height: Dimensions.popularFoodImageSize,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                    fit: BoxFit.cover,
-                    image: AssetImage("assets/images/image1.jpg")),
+                  fit: BoxFit.cover,
+                  image: NetworkImage(AppConstants.BASE_URL +
+                      AppConstants.ULOAD_URI +
+                      product.imageName!),
+                ),
               ),
             ),
           ),
@@ -40,14 +55,53 @@ class PopularProductDetail extends StatelessWidget {
               children: [
                 GestureDetector(
                     onTap: () {
-                      Get.toNamed(RouteHelper.intial);
+                      if (page == "cartpage") {
+                        Get.toNamed(RouteHelper.getCartPage());
+                      } else {
+                        Get.toNamed(RouteHelper.getIntial());
+                      }
                     },
                     child: AppIcon(icon: Icons.arrow_back_ios)),
-                AppIcon(icon: Icons.shopping_cart_outlined),
+                GetBuilder<PopularProductController>(builder: (controller) {
+                  return GestureDetector(
+                    onTap: () {
+                      if (controller.totalItems >= 1)
+                        Get.toNamed(RouteHelper.getCartPage());
+                    },
+                    child: Stack(
+                      children: [
+                        AppIcon(icon: Icons.shopping_cart_outlined),
+                        controller.totalItems >= 1
+                            ? Positioned(
+                                right: 0,
+                                top: 0,
+                                child: AppIcon(
+                                    icon: Icons.circle,
+                                    size: 20,
+                                    iconColor: Colors.transparent,
+                                    backgroundColor: AppColors.mainColor),
+                              )
+                            : Container(),
+                        Get.find<PopularProductController>().totalItems >= 1
+                            ? Positioned(
+                                right: 3,
+                                top: 3,
+                                child: BigText(
+                                  text: Get.find<PopularProductController>()
+                                      .totalItems
+                                      .toString(),
+                                  size: 12,
+                                  color: Colors.white,
+                                ))
+                            : Container(),
+                      ],
+                    ),
+                  );
+                })
               ],
             ),
           ),
-          // interoduction of food
+          // interoduction of product
           Positioned(
             left: 0,
             right: 0,
@@ -68,15 +122,18 @@ class PopularProductDetail extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AppColumn(text: "Ethiopia Product"),
+                  AppColumn(text: product.name!),
                   SizedBox(height: Dimensions.height20),
                   BigText(text: "Introuduce"),
+                  SizedBox(height: Dimensions.height20),
                   Expanded(
                     child: SingleChildScrollView(
-                      child: ExpandableTextWidget(
-                        text:
-                            "በስመ አብ ወወልድ ወመንፈስ ቅዱስ አሐዱ አምላክ አሜን የተወደዳችሁ ወገኖቻችን እንኳን ለታላቅ የበረከት የጸሎት የስግደት ዕለታት በሰላም አደረሳችሁ። ከዚህ በፊት ቤተ ክርስቲያንን እንዲሁም ኢትዮጵያን የሚያስቀጥል ትውልድ ለማፍራት በማሰብ የሙሓዘ ምሥጢራት አራቱ ጉባኤያት ትምሕርት ደፋ ቀና እያለ እንደሆነ በጽሑፍም በቪድዮም መግለጻችንን ታስታውሳላች ይሁን እንጂ ቤተ ክርስቲያኗም ሆነ ሀገሪቷ አንዱን አጀንዳ ሳትፈታ ሌላ እየተጨመረላት ስናይ እኛም እየተሰቀቅን ገፋ አድርገን አልጠየቅናችሁ። መከራው ግን እየገፋ እየባሰ ከመሄድ ውጭ ለውጥ እንደማይመጣ እኛ ተረድተናል እናንተም ልትረዱ ይገባል ይህን መከራ ሊያርቅ የሚችለው አንዱ እኛ የጀመርነው ሥራ ነው። ለምሳሌ አንደኛ እኛ ያሰብነው የሁሉም ቋንቋ ተናጋሪዎች ልጆች ወደጉባኤ ቤቱ ገብተው እግዚአብሔርን እንዲያውቁ ሃይማኖት እንዲማሩ በአንድነት ተስማምቶ መኖር እንደሚቻል አስተምረን አንዲት ቤተ ክርስቲያንን አንዲት ኢትዮጵያን ማስረከብ ነው። እርግጠኛ ነን በዚህ ሥራ ላይ በደንብ ከተሳተፍን አሥር አመት ባልሞላ ጊዜ ውስጥ አንድ እንሆናለን። ሁለተኛ ጉባኤ ቤቶች በደንብ ከጠነከሩ ለሀገር ለወገን የሚጸልዩ ቅዱሳን አባቶችን በብዛት ማግኘት እንችላለን። ሦስተኛ ግራ የተጋባውን ትውልድ ከጨለማ ወደብርሃን እናወጣለን። በአጠቃላይ ሁሉም ሰው ሰላም ያገኛል። አሁን  አብዛኛው የዓለም ሰው ሰላምን መረጋጋትን ይፈልጋል ነገር ግን የሚፈልገው በማይገኝበት ቦታ  ነው ላም ባልዋለበት ኩበት ለቀማ ነው የሆነበት ወገኖቻችን እናንተ በአቅማችሁ ማገዝ ብቻ ነው የማጠበቅባችሁ ሥራው የሚከብደው ለእኛ ነው ባንድፊት ሕንጻ ማሰራት ባንድ ፊት ማስተማር ባንድ ፊት የደቀ መዛሙርት ምግብ መፈለግ እጅግ ከባድ ነው ይሁን እንጂ በእግዚአብሔር አጋዥኘት እንደምንወጣው እናምናለን። ወገኖቻችን ገንዘባችሁን ጉልበታችሁን እውቀታችሁን በሐላፊ ነገር ላይ አትጣሉት ለትውልድ በሚያልፍ እና በሰማይ ለዘለዓልም በክብር በሚያኖር ላይ ጣሉት። ከዚህ በፊት ብዙ ጊዜ ጠይቀን ነበር ግን አንድ ሣንቲም የለም ዓላማው  እጅግ አስፈላጊ ስለሆነ ሁላችሁም በተቻላችሁ መጠን ትረዱን ዘንድ በድንግል ማርያም ስም እንጠይቃለን። የጉባኤ ቤታችን አካውንት 1000354747662 አንሳስ መንበረ ብርሃን ቅድስት ማርያም ብሉይ ኪዳን ጉባኤ። ለበለጠ መረጃ 0921202229ለብርሃነ ትንሳኤው እንኳን በሰላም አደረሳችሁልባችሁን እንጂ ልብሳችሁን አትቅደዱ፤ አምላካችሁም እግዚአብሔር ቸርና መሐሪ፥ ቍጣው የዘገየ፥ ምሕረቱም የበዛ፥ ለክፋትም የተጸጸተ ነውና ወደ እርሱ ተመለሱበውኑ ኢትዮጵያዊ መልኩን ወይስ ነብር ዝንጕርጕርነትን ይለውጥ ዘንድ ይችላል በዚያን ጊዜ ክፋትን የለመዳችሁ እናንተ ደግሞ በጎ ለማድረግ ትችላላችሁ ለብርሃነ ትንሳኤው እንኳን በሰላም አደረሳችሁልባችሁን እንጂ ልብሳችሁን አትቅደዱ፤ አምላካችሁም እግዚአብሔር ቸርና መሐሪ፥ ቍጣው የዘገየ፥ ምሕረቱም የበዛ፥ ለክፋትም የተጸጸተ ነውና ወደ እርሱ ተመለሱበውኑ ኢትዮጵያዊ መልኩን ወይስ ነብር ዝንጕርጕርነትን ይለውጥ ዘንድ ይችላል በዚያን ጊዜ ክፋትን የለመዳችሁ እናንተ ደግሞ በጎ ለማድረግ ትችላላችሁ",
-                        margin: EdgeInsets.only(left: 20, right: 20),
+                      child: Text(
+                        product.description!,
+                        style: TextStyle(
+                          fontSize: 16,
+                          height: 1.5, // Adjust the line spacing here
+                        ),
                       ),
                     ),
                   )
@@ -87,59 +144,79 @@ class PopularProductDetail extends StatelessWidget {
           // expandable text widget
         ],
       ),
-      bottomNavigationBar: Container(
-        height: Dimensions.bottomHieghtBar,
-        margin: EdgeInsets.only(left: 20, right: 20),
-        padding: EdgeInsets.only(
-          top: Dimensions.height30,
-          bottom: Dimensions.height30,
-          left: Dimensions.width30,
-          right: Dimensions.height30,
-        ),
-        decoration: BoxDecoration(
-            color: AppColors.buttonBackgroundColor,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(Dimensions.radius20 * 2),
-              topRight: Radius.circular(Dimensions.radius20 * 2),
-            )),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(
-                padding: EdgeInsets.only(
-                  top: Dimensions.height20,
-                  bottom: Dimensions.height20,
-                  right: Dimensions.width20,
-                  left: Dimensions.width20,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(Dimensions.radius20),
-                  color: Colors.white,
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.remove, color: AppColors.signColor),
-                    SizedBox(width: Dimensions.width10 / 2),
-                    BigText(text: "0"),
-                    SizedBox(width: Dimensions.width10 / 2),
-                    Icon(Icons.add, color: AppColors.signColor),
-                  ],
+      bottomNavigationBar: GetBuilder<PopularProductController>(
+        builder: (popularProduct) {
+          return Container(
+            height: Dimensions.bottomHieghtBar,
+            margin: EdgeInsets.only(left: 20, right: 20),
+            padding: EdgeInsets.only(
+              top: Dimensions.height30,
+              bottom: Dimensions.height30,
+              left: Dimensions.width30,
+              right: Dimensions.height30,
+            ),
+            decoration: BoxDecoration(
+                color: AppColors.buttonBackgroundColor,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(Dimensions.radius20 * 2),
+                  topRight: Radius.circular(Dimensions.radius20 * 2),
                 )),
-            Container(
-              padding: EdgeInsets.only(
-                top: Dimensions.height20,
-                bottom: Dimensions.height20,
-                right: Dimensions.width20,
-                left: Dimensions.width20,
-              ),
-              child: BigText(text: "\$10 | Add to cart", color: Colors.white),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(Dimensions.radius20),
-                color: AppColors.mainColor,
-              ),
-            )
-          ],
-        ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                    padding: EdgeInsets.only(
+                      top: Dimensions.height20,
+                      bottom: Dimensions.height20,
+                      right: Dimensions.width20,
+                      left: Dimensions.width20,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(Dimensions.radius20),
+                      color: Colors.white,
+                    ),
+                    child: Row(
+                      children: [
+                        GestureDetector(
+                            onTap: () {
+                              popularProduct.setQuantity(false);
+                            },
+                            child:
+                                Icon(Icons.remove, color: AppColors.signColor)),
+                        SizedBox(width: Dimensions.width10 / 2),
+                        BigText(text: popularProduct.inCartItems.toString()),
+                        SizedBox(width: Dimensions.width10 / 2),
+                        GestureDetector(
+                            onTap: () {
+                              popularProduct.setQuantity(true);
+                            },
+                            child: Icon(Icons.add, color: AppColors.signColor)),
+                      ],
+                    )),
+                Container(
+                  padding: EdgeInsets.only(
+                    top: Dimensions.height20,
+                    bottom: Dimensions.height20,
+                    right: Dimensions.width20,
+                    left: Dimensions.width20,
+                  ),
+                  child: GestureDetector(
+                    onTap: () {
+                      popularProduct.addItem(product);
+                    },
+                    child: BigText(
+                        text: "\$ ${product.price!}  | Add to cart",
+                        color: Colors.white),
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(Dimensions.radius20),
+                    color: AppColors.mainColor,
+                  ),
+                )
+              ],
+            ),
+          );
+        },
       ),
     );
   }

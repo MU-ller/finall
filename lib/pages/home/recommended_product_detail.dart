@@ -1,7 +1,9 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
 import 'package:abayecommerce/colors/AppColors.dart';
+import 'package:abayecommerce/controllers/cart_controller.dart';
+import 'package:abayecommerce/controllers/popular_product_controller.dart';
+import 'package:abayecommerce/controllers/recomended_product_controller.dart';
 import 'package:abayecommerce/route/route_helper.dart';
+import 'package:abayecommerce/utils/app_constant.dart';
 import 'package:abayecommerce/utils/dimensions.dart';
 import 'package:abayecommerce/widgets/app_icon.dart';
 import 'package:abayecommerce/widgets/big_text.dart';
@@ -10,10 +12,18 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class RecommendedProductDetail extends StatelessWidget {
-  const RecommendedProductDetail({super.key});
+  final int pageId;
+  final String page;
+  const RecommendedProductDetail(
+      {Key? key, required this.pageId, required this.page})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    var product =
+        Get.find<RecommendedProductController>().recommendedProductList[pageId];
+    Get.find<PopularProductController>()
+        .initProduct(product, Get.find<CartController>());
     return Scaffold(
       backgroundColor: Colors.white,
       body: CustomScrollView(
@@ -25,11 +35,50 @@ class RecommendedProductDetail extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 GestureDetector(
-                  onTap: () {
-                    Get.toNamed(RouteHelper.getIntial());
-                  },
-                ),
-                AppIcon(icon: Icons.shopping_cart_outlined),
+                    onTap: () {
+                      if (page == "cartpage") {
+                        Get.toNamed(RouteHelper.getCartPage());
+                      } else {
+                        Get.toNamed(RouteHelper.getIntial());
+                      }
+                    },
+                    child: AppIcon(icon: Icons.arrow_back_ios_new)),
+                GetBuilder<PopularProductController>(builder: (controller) {
+                  return GestureDetector(
+                    onTap: () {
+                      if (controller.totalItems >= 1)
+                        Get.toNamed(RouteHelper.getCartPage());
+                    },
+                    child: Stack(
+                      children: [
+                        AppIcon(icon: Icons.shopping_cart_outlined),
+                        Get.find<PopularProductController>().totalItems >= 1
+                            ? Positioned(
+                                right: 0,
+                                top: 0,
+                                child: AppIcon(
+                                    icon: Icons.circle,
+                                    size: 20,
+                                    iconColor: Colors.transparent,
+                                    backgroundColor: AppColors.mainColor),
+                              )
+                            : Container(),
+                        Get.find<PopularProductController>().totalItems >= 1
+                            ? Positioned(
+                                right: 3,
+                                top: 3,
+                                child: BigText(
+                                  text: Get.find<PopularProductController>()
+                                      .totalItems
+                                      .toString(),
+                                  size: 12,
+                                  color: Colors.white,
+                                ))
+                            : Container(),
+                      ],
+                    ),
+                  );
+                })
               ],
             ),
             bottom: PreferredSize(
@@ -38,8 +87,8 @@ class RecommendedProductDetail extends StatelessWidget {
                 margin: EdgeInsets.only(
                     left: Dimensions.width20, right: Dimensions.width20),
                 child: Center(
-                    child: BigText(
-                        size: Dimensions.font26, text: "Ethiopian Product")),
+                    child:
+                        BigText(size: Dimensions.font26, text: product.name!)),
                 width: double.maxFinite,
                 padding: EdgeInsets.only(top: 5, bottom: 10),
                 decoration: BoxDecoration(
@@ -54,21 +103,22 @@ class RecommendedProductDetail extends StatelessWidget {
             backgroundColor: AppColors.yellowColor,
             expandedHeight: 300,
             flexibleSpace: FlexibleSpaceBar(
-              background: Image.asset(
-                "assets/images/image1.jpg",
-                width: double.maxFinite,
-                fit: BoxFit.cover,
-              ),
-            ),
+                background: Image.network(
+              AppConstants.BASE_URL +
+                  AppConstants.ULOAD_URI +
+                  product.imageName!,
+              width: double.maxFinite,
+              fit: BoxFit.cover,
+            )),
           ),
           SliverToBoxAdapter(
               child: Column(
             children: [
               Container(
                 child: ExpandableTextWidget(
-                  text:
-                      " ፖሊስ ልብስ በመልበስ በጦር መሣሪያ በማስፈራራት ከ395 ሺህ ብር በላይ ንብረት ዘርፈው የወሰዱት ተከሳሾች በፅኑ እስራት ተቀጡ በፍትሕ ሚኒስቴር የጠቅላይ ዐቃቤ ሕግ ዘርፍ የልዩ ልዩ ወንጀል ጉዳዮች ዳይሬክቶሬት ዐቃቤ ሕግ የፌዴራል ፖሊስ ልብስ በመልበስ በጦር መሣሪያ በማስፈራራት ከ395 ሺህ ብር በላይ ንብረት ይዛችሁ ተሰውራችኋል ባላቸው ተከሳሾች ላይ ክስ መስርቶባቸው 1ኛ እና 2ኛ ተከሳሾችን በ14 ዓመት ፅኑ እስራት፣ 3ኛ ተከሳሽን በ13 ዓመት የፌዴራል ፖሊስ ልብስ በመልበስ በጦር መሣሪያ በማስፈራራት ከ395 ሺህ ብር በላይ ንብረት ዘርፈው የወሰዱት ተከሳሾች በፅኑ እስራት ተቀጡ በፍትሕ ሚኒስቴር የጠቅላይ ዐቃቤ ሕግ ዘርፍ የልዩ ልዩ ወንጀል ጉዳዮች ዳይሬክቶሬት ዐቃቤ ሕግ የፌዴራል ፖሊስ ልብስ በመልበስ በጦር መሣሪያ በማስፈራራት ከ395 ሺህ ብር በላይ ንብረት ይዛችሁ ተሰውራችኋል ባላቸው ተከሳሾች ላይ ክስ መስርቶባቸው 1ኛ እና 2ኛ ተከሳሾችን በ14 ዓመት ፅኑ እስራት፣ 3ኛ ተከሳሽን በ13 ዓመት ፅኑ እስራት እንዲቀጡ አድርጓል። 1ኛ አሸብር ተስፋዬ፣ 2ኛ ኢ/ር አብዲ ሰይድ፣ 3ኛ ሰለሞን አየለ የተባሉ ተከሳሾች በ1996 ዓ.ም የወጣውን የወንጀል ሕግ አንቀጽ 32/1/ሀ/ እና 671/1/ለ/ ስር የተመለከተውን በመተላለፍ የተሳትፎ ደረጃቸው ተጠቅሶ በዐቃቤ ሕግ ተከሰዋል። የዐቃቤ ሕግ የክስ መዝገብ እንደሚያስረዳው ተከሳሾች ተገቢ ያልሆነ ብልፅግና ለራሳቸው ለማግኘት አስበው ሐምሌ 1 ቀን 2013 ዓ.ም በኮልፌ ቀራኒዮ ክፍለ ከተማ ወረዳ 03 ሰለፊያ መስጂድ ተብሎ ከሚጠራው አካባቢ የፌዴራል ፖሊስ ልብስ በመልበስ እና የጦር መሣሪያ በመያዝ የግል ተበዳይ አቶ ሳሊሞ ጀማል የፌዴራል ፖሊስ ልብስ በመልበስ በጦር መሣሪያ በማስፈራራት ከ395 ሺህ ብር በላይ ንብረት ዘርፈው የወሰዱት ተከሳሾች በፅኑ እስራት ተቀጡ በፍትሕ ሚኒስቴር የጠቅላይ ዐቃቤ ሕግ ዘርፍ የልዩ ልዩ ወንጀል ጉዳዮች ዳይሬክቶሬት ዐቃቤ ሕግ የፌዴራል ፖሊስ ልብስ በመልበስ በጦር መሣሪያ በማስፈራራት ከ395 ሺህ ብር በላይ ንብረት ይዛችሁ ተሰውራችኋል ባላቸው ተከሳሾች ላይ ክስ መስርቶባቸው 1ኛ እና 2ኛ ተከሳሾችን በ14 ዓመት ፅኑ እስራት፣ 3ኛ ተከሳሽን በ13 ዓመት ፅኑ እስራት እንዲቀጡ አድርጓል። 1ኛ አሸብር ተስፋዬ፣ 2ኛ ኢ/ር አብዲ ሰይድ፣ 3ኛ ሰለሞን አየለ የተባሉ ተከሳሾች በ1996 ዓ.ም የወጣውን የወንጀል ሕግ አንቀጽ 32/1/ሀ/ እና 671/1/ለ/ ስር የተመለከተውን በመተላለፍ የተሳትፎ ደረጃቸው ተጠቅሶ በዐቃቤ ሕግ ተከሰዋል። የዐቃቤ ሕግ የክስ መዝገብ እንደሚያስረዳው ተከሳሾች ተገቢ ያልሆነ ብልፅግና ለራሳቸው ለማግኘት አስበው ሐምሌ 1 ቀን 2013 ዓ.ም በኮልፌ ቀራኒዮ ክፍለ ከተማ ወረዳ 03 ሰለፊያ መስጂድ ተብሎ ከሚጠራው አካባቢ የፌዴራል ፖሊስ ልብስ በመልበስ እና የጦር መሣሪያ በመያዝ የግል ተበዳይ አቶ ሳሊሞ ጀማል ረዳ ቤት ሄደው የውጭ በር በማንኳኳት እና ሕጋዊ ሰዎች ነን፣ ሕጋዊ ወረቀት ይዘናል፣ ረዳ ቤት ሄደው የውጭ በር በማንኳኳት እና ሕጋዊ ሰዎች ነን፣ ሕጋዊ ወረቀት ይዘናል፣ ፅኑ እስራት እንዲቀጡ አድርጓል። 1ኛ አሸብር ተስፋዬ፣ 2ኛ ኢ/ር አብዲ ሰይድ፣ 3ኛ ሰለሞን አየለ የተባሉ ተከሳሾች በ1996 ዓ.ም የወጣውን የወንጀል ሕግ አንቀጽ 32/1/ሀ/ እና 671/1/ለ/ ስር የተመለከተውን በመተላለፍ የተሳትፎ ደረጃቸው ተጠቅሶ በዐቃቤ ሕግ ተከሰዋል። የዐቃቤ ሕግ የክስ መዝገብ እንደሚያስረዳው ተከሳሾች ተገቢ ያልሆነ ብልፅግና ለራሳቸው ለማግኘት አስበው ሐምሌ 1 ቀን 2013 ዓ.ም በኮልፌ ቀራኒዮ ክፍለ ከተማ ወረዳ 03 ሰለፊያ መስጂድ ተብሎ ከሚጠራው አካባቢ የፌዴራል ፖሊስ ልብስ በመልበስ እና የጦር መሣሪያ በመያዝ የግል ተበዳይ አቶ ሳሊሞ ጀማል ረዳ ቤት ሄደው የውጭ በር በማንኳኳት እና ሕጋዊ ሰዎች ነን፣ ሕጋዊ ወረቀት ይዘናል፣ የፌዴራል ፖሊስ ልብስ በመልበስ በጦር መሣሪያ በማስፈራራት ከ395 ሺህ ብር በላይ ንብረት ዘርፈው የወሰዱት ተከሳሾች በፅኑ እስራት ተቀጡ በፍትሕ ሚኒስቴር የጠቅላይ ዐቃቤ ሕግ ዘርፍ የልዩ ልዩ ወንጀል ጉዳዮች ዳይሬክቶሬት ዐቃቤ ሕግ የፌዴራል ፖሊስ ልብስ በመልበስ በጦር መሣሪያ በማስፈራራት ከ395 ሺህ ብር በላይ ንብረት ይዛችሁ ተሰውራችኋል ባላቸው ተከሳሾች ላይ ክስ መስርቶባቸው 1ኛ እና 2ኛ ተከሳሾችን በ14 ዓመት ፅኑ እስራት፣ 3ኛ ተከሳሽን በ13 ዓመት ፅኑ እስራት እንዲቀጡ አድርጓል። 1ኛ አሸብር ተስፋዬ፣ 2ኛ ኢ/ር አብዲ ሰይድ፣ 3ኛ ሰለሞን አየለ የተባሉ ተከሳሾች በ1996 ዓ.ም የወጣውን የወንጀል ሕግ አንቀጽ 32/1/ሀ/ እና 671/1/ለ/ ስር የተመለከተውን በመተላለፍ የተሳትፎ ደረጃቸው ተጠቅሶ በዐቃቤ ሕግ ተከሰዋል። የዐቃቤ ሕግ የክስ መዝገብ እንደሚያስረዳው ተከሳሾች ተገቢ ያልሆነ ብልፅግና ለራሳቸው ለማግኘት አስበው ሐምሌ 1 ቀን 2013 ዓ.ም በኮልፌ ቀራኒዮ ክፍለ ከተማ ወረዳ 03 ሰለፊያ መስጂድ ተብሎ ከሚጠራው አካባቢ የፌዴራል ፖሊስ ልብስ በመልበስ እና የጦር መሣሪያ በመያዝ የግል ተበዳይ አቶ ሳሊሞ ጀማል ረዳ ቤት ሄደው የውጭ በር በማንኳኳት እና ሕጋዊ ሰዎች ነን፣ ሕጋዊ ወረቀት ይዘናል፣",
-                  margin: EdgeInsets.only(left: 20, right: 20),
+                  text: product.description!,
+                  margin: EdgeInsets.only(
+                      left: Dimensions.width20, right: Dimensions.width20),
                 ),
                 margin: EdgeInsets.only(
                     left: Dimensions.width20, right: Dimensions.width20),
@@ -77,83 +127,105 @@ class RecommendedProductDetail extends StatelessWidget {
           ))
         ],
       ),
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: EdgeInsets.only(
-                left: Dimensions.width20 * 2.5,
-                right: Dimensions.width20 * 2.5,
-                top: Dimensions.height10,
-                bottom: Dimensions.height10),
-            child: Row(
+      bottomNavigationBar:
+          GetBuilder<PopularProductController>(builder: (controller) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: EdgeInsets.only(
+                  left: Dimensions.width20 * 2.5,
+                  right: Dimensions.width20 * 2.5,
+                  top: Dimensions.height10,
+                  bottom: Dimensions.height10),
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        controller.setQuantity(false);
+                      },
+                      child: AppIcon(
+                          iconSize: Dimensions.iconSize24,
+                          iconColor: Colors.white,
+                          backgroundColor: AppColors.mainColor,
+                          icon: Icons.remove),
+                    ),
+                    BigText(
+                      text: "\$ ${product.price!}" +
+                          " X  ${controller.inCartItems}",
+                      color: AppColors.mainBlackColor,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        controller.setQuantity(true);
+                      },
+                      child: AppIcon(
+                          iconSize: Dimensions.iconSize24,
+                          iconColor: Colors.white,
+                          backgroundColor: AppColors.mainColor,
+                          icon: Icons.add),
+                    ),
+                  ]),
+            ),
+            Container(
+              height: Dimensions.bottomHieghtBar,
+              margin: EdgeInsets.only(left: 20, right: 20),
+              padding: EdgeInsets.only(
+                top: Dimensions.height30,
+                bottom: Dimensions.height30,
+                left: Dimensions.width30,
+                right: Dimensions.height30,
+              ),
+              decoration: BoxDecoration(
+                  color: AppColors.buttonBackgroundColor,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(Dimensions.radius20 * 2),
+                    topRight: Radius.circular(Dimensions.radius20 * 2),
+                  )),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  AppIcon(
-                      iconSize: Dimensions.iconSize24,
-                      iconColor: Colors.white,
-                      backgroundColor: AppColors.mainColor,
-                      icon: Icons.remove),
-                  BigText(
-                    text: "\$12.88" + " X " + " 0 ",
-                    color: AppColors.mainBlackColor,
-                  ),
-                  AppIcon(
-                      iconSize: Dimensions.iconSize24,
-                      iconColor: Colors.white,
-                      backgroundColor: AppColors.mainColor,
-                      icon: Icons.add),
-                ]),
-          ),
-          Container(
-            height: Dimensions.bottomHieghtBar,
-            margin: EdgeInsets.only(left: 20, right: 20),
-            padding: EdgeInsets.only(
-              top: Dimensions.height30,
-              bottom: Dimensions.height30,
-              left: Dimensions.width30,
-              right: Dimensions.height30,
-            ),
-            decoration: BoxDecoration(
-                color: AppColors.buttonBackgroundColor,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(Dimensions.radius20 * 2),
-                  topRight: Radius.circular(Dimensions.radius20 * 2),
-                )),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                    padding: EdgeInsets.only(
-                      top: Dimensions.height20,
-                      bottom: Dimensions.height20,
-                      right: Dimensions.width20,
-                      left: Dimensions.width20,
+                  Container(
+                      padding: EdgeInsets.only(
+                        top: Dimensions.height20,
+                        bottom: Dimensions.height20,
+                        right: Dimensions.width20,
+                        left: Dimensions.width20,
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius:
+                            BorderRadius.circular(Dimensions.radius20),
+                        color: Colors.white,
+                      ),
+                      child: Icon(Icons.favorite, color: AppColors.mainColor)),
+                  GestureDetector(
+                    onTap: () {
+                      controller.addItem(product);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.only(
+                        top: Dimensions.height20,
+                        bottom: Dimensions.height20,
+                        right: Dimensions.width20,
+                        left: Dimensions.width20,
+                      ),
+                      child: BigText(
+                          text: "\$ ${product.price!} | Add to cart",
+                          color: Colors.white),
+                      decoration: BoxDecoration(
+                        borderRadius:
+                            BorderRadius.circular(Dimensions.radius20),
+                        color: AppColors.mainColor,
+                      ),
                     ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(Dimensions.radius20),
-                      color: Colors.white,
-                    ),
-                    child: Icon(Icons.favorite, color: AppColors.mainColor)),
-                Container(
-                  padding: EdgeInsets.only(
-                    top: Dimensions.height20,
-                    bottom: Dimensions.height20,
-                    right: Dimensions.width20,
-                    left: Dimensions.width20,
-                  ),
-                  child:
-                      BigText(text: "\$10 | Add to cart", color: Colors.white),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(Dimensions.radius20),
-                    color: AppColors.mainColor,
-                  ),
-                )
-              ],
+                  )
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        );
+      }),
     );
   }
 }

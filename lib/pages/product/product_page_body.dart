@@ -37,8 +37,8 @@ class _ProductPageBodyState extends State<ProductPageBody> {
 
   @override
   void dispose() {
-    super.dispose();
     pageController.dispose();
+    super.dispose();
   }
 
   @override
@@ -53,7 +53,8 @@ class _ProductPageBodyState extends State<ProductPageBody> {
                   height: Dimensions.pageView,
                   child: GestureDetector(
                       onTap: () {
-                        Get.toNamed(RouteHelper.getPopularProduct());
+                        Get.toNamed(RouteHelper.getPopularProduct(
+                            _currentPageValue.toInt(), "home"));
                       },
                       child: PageView.builder(
                         controller: pageController,
@@ -67,6 +68,8 @@ class _ProductPageBodyState extends State<ProductPageBody> {
                   color: AppColors.mainColor,
                 );
         }),
+        SizedBox(height: Dimensions.height20),
+
         GetBuilder<PopularProductController>(builder: (popularProducts) {
           return DotsIndicator(
             dotsCount: popularProducts.popularProductList.isEmpty
@@ -83,11 +86,11 @@ class _ProductPageBodyState extends State<ProductPageBody> {
           );
         }),
         // Popular text
-        SizedBox(height: Dimensions.height30),
+        SizedBox(height: Dimensions.height45),
         Container(
           margin: EdgeInsets.only(left: Dimensions.width30),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               BigText(text: "Recommended"),
               SizedBox(width: Dimensions.width10),
@@ -103,6 +106,9 @@ class _ProductPageBodyState extends State<ProductPageBody> {
             ],
           ),
         ),
+        SizedBox(height: Dimensions.height45),
+
+        // recommended product
         // List of Product and images
         GetBuilder<RecommendedProductController>(
             builder: (recommendedProducts) {
@@ -114,7 +120,8 @@ class _ProductPageBodyState extends State<ProductPageBody> {
                   itemBuilder: (context, index) {
                     return GestureDetector(
                       onTap: () {
-                        Get.toNamed(RouteHelper.getRecommendedProduct());
+                        Get.toNamed(
+                            RouteHelper.getRecommendedProduct(index, "home"));
                       },
                       child: Container(
                         margin: EdgeInsets.only(
@@ -131,12 +138,13 @@ class _ProductPageBodyState extends State<ProductPageBody> {
                                     BorderRadius.circular(Dimensions.radius20),
                                 color: Colors.white38,
                                 image: DecorationImage(
-                                    fit: BoxFit.cover,
-                                    image: NetworkImage(AppConstants.BASE_URL +
-                                        AppConstants.ULOAD_URI +
-                                        recommendedProducts
-                                            .recommendedProductList[index]
-                                            .imageName!)),
+                                  fit: BoxFit.cover,
+                                  image: NetworkImage(AppConstants.BASE_URL +
+                                      AppConstants.ULOAD_URI +
+                                      recommendedProducts
+                                          .recommendedProductList[index]
+                                          .imageName!),
+                                ),
                               ),
                             ),
                             // text container
@@ -245,7 +253,7 @@ class _ProductPageBodyState extends State<ProductPageBody> {
         children: [
           GestureDetector(
             onTap: () {
-              Get.toNamed(RouteHelper.getPopularProduct());
+              Get.toNamed(RouteHelper.getPopularProduct(index, "home"));
             },
             child: Container(
               height: Dimensions.pageViewContainer,
@@ -272,11 +280,11 @@ class _ProductPageBodyState extends State<ProductPageBody> {
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              height: Dimensions.pageViewTextContainer,
+              height: 100,
               margin: EdgeInsets.only(
                   left: Dimensions.width30,
                   right: Dimensions.width30,
-                  bottom: Dimensions.height30),
+                  bottom: Dimensions.height10),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(Dimensions.radius20),
                   color: Colors.white,
@@ -302,7 +310,8 @@ class _ProductPageBodyState extends State<ProductPageBody> {
                 child: AppColumn(text: popularProduct.name!),
               ),
             ),
-          )
+          ),
+          // SizedBox(height: Dimensions.height20)
         ],
       ),
     );
